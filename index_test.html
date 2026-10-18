@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aptis // Android Laser Telemetry & Beam Diagnostics</title>
+    <!-- Website Icon linked directly to app_icon.png in the same folder -->
+    <link rel="icon" type="image/png" href="./app_icon.png">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        lightBg: '#0b0f19',
+                        cardBg: '#111827',
+                        cardHover: '#1f2937',
+                        borderCol: '#374151',
+                        accentBlue: '#38bdf8',
+                        blueHighlight: '#0284c7',
+                        successGreen: '#22c55e',
+                        warningAmber: '#f59e0b',
+                        textDark: '#f8fafc',
+                        textMuted: '#94a3b8',
+                    },
+                    fontFamily: {
+                        mono: ['SF Mono', 'Fira Code', 'Courier New', 'monospace'],
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .grid-bg {
+            background-image: linear-gradient(to right, rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+        .radial-gradient {
+            background: radial-gradient(circle at 50% 10%, rgba(56, 189, 248, 0.08) 0%, rgba(11, 15, 25, 0) 60%);
+        }
+    </style>
+</head>
+<body class="bg-lightBg text-textDark font-sans antialiased selection:bg-accentBlue selection:text-slate-950 radial-gradient min-h-screen">
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-50 backdrop-blur-xl bg-lightBg/90 border-b border-borderCol shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-accentBlue to-blueHighlight flex items-center justify-center shadow-sm overflow-hidden p-0.5">
+                    <img src="./app_icon.png" alt="Aptis Logo" class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <span class="font-extrabold tracking-widest text-sm text-textDark uppercase">APTIS</span>
+                    <span class="block text-[9px] text-textMuted tracking-wider uppercase font-mono font-bold leading-none">Android Mobile Telemetry</span>
+                </div>
+            </div>
+            
+            <nav class="hidden md:flex items-center space-x-6 text-xs font-mono uppercase tracking-wider font-semibold">
+                <a href="#overview" class="text-textMuted hover:text-accentBlue transition">Overview</a>
+                <a href="#download" class="text-textMuted hover:text-accentBlue transition font-bold text-accentBlue">Android APK</a>
+                <a href="#simulator" class="text-textMuted hover:text-accentBlue transition">Live HUD</a>
+                <a href="#publications" class="text-textMuted hover:text-accentBlue transition">Publications</a>
+                <a href="#architecture" class="text-textMuted hover:text-accentBlue transition">Architecture</a>
+            </nav>
+
+            <div class="flex items-center space-x-3">
+                <div class="hidden sm:flex items-center space-x-2 px-3 py-1 rounded-lg bg-cardBg border border-borderCol text-xs font-mono shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-successGreen animate-pulse"></span>
+                    <span class="text-textDark font-semibold">v1.0.4 APK</span>
+                </div>
+                <a href="https://vladgaciu.github.io/aptistelemetry-site/" target="_blank" rel="noopener" class="bg-accentBlue text-slate-950 font-bold px-4 py-2 rounded-lg text-xs font-mono hover:bg-sky-400 transition shadow-md flex items-center gap-1.5">
+                    <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+                    <span>GitHub Docs & APK</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="overview" class="relative overflow-hidden py-12 lg:py-16 grid-bg border-b border-borderCol">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+             
+                <div class="lg:col-span-7 space-y-4 text-left">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-accentBlue/10 border border-accentBlue/30 text-accentBlue font-mono text-xs font-bold">
+                        <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+                        <span>Laboratory Floor Mobile Telemetry</span>
+                    </div>
+                 
+                    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-[1.15] text-textDark">
+                        Aptis Android Client & <br><span class="text-accentBlue">Optical Table HUD</span>
+                    </h1>
+                 
+                    <p class="text-textMuted text-sm sm:text-base max-w-xl font-sans leading-relaxed font-medium">
+                        Take your high-power laser diagnostics directly to the optical table. Download the Aptis Android APK to monitor real-time sub-pixel centroid offsets, D4σ beam widths, and 2D FFT health indexes wirelessly from your phone or tablet.
+                    </p>
+
+                    <div class="flex flex-wrap gap-3 pt-1">
+                        <a href="#download" class="flex items-center space-x-2 bg-accentBlue text-slate-950 font-mono font-bold px-5 py-2.5 rounded-xl hover:bg-sky-400 transition shadow-md text-xs">
+                            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                            <span>Download Android APK (v1.0.4)</span>
+                        </a>
+                        <a href="https://vladgaciu.github.io/aptistelemetry-site/" target="_blank" rel="noopener" class="flex items-center space-x-2 bg-cardBg text-textDark hover:text-accentBlue border border-borderCol font-mono font-semibold px-5 py-2.5 rounded-xl transition shadow-sm text-xs">
+                            <i data-lucide="github" class="w-3.5 h-3.5"></i>
+                            <span>GitHub Documentation</span>
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3 pt-6 border-t border-borderCol font-mono text-xs">
+                        <div>
+                            <span class="text-textMuted block uppercase font-bold text-[10px]">PLATFORM</span>
+                            <strong class="text-textDark text-sm font-extrabold">Android 9.0+</strong>
+                        </div>
+                        <div>
+                            <span class="text-textMuted block uppercase font-bold text-[10px]">STREAMING</span>
+                            <strong class="text-accentBlue text-sm font-extrabold">Low-Latency MJPEG</strong>
+                        </div>
+                        <div>
+                            <span class="text-textMuted block uppercase font-bold text-[10px]">DEPLOYMENT</span>
+                            <strong class="text-textDark text-sm font-extrabold">Direct Sideload APK</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Graphic Console Preview -->
+                <div class="lg:col-span-5">
+                    <div class="bg-cardBg border border-borderCol rounded-xl p-3.5 shadow-lg relative">
+                        <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-borderCol">
+                            <div class="flex items-center space-x-2 font-mono text-xs text-textDark font-bold">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-yellow-500 inline-block"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-successGreen inline-block"></span>
+                                <span class="ml-1 text-[11px]">aptis_mobile.apk</span>
+                            </div>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-accentBlue/15 text-accentBlue font-bold">ARM64 / x86</span>
+                        </div>
+                     
+                        <!-- Simulated Live HUD Stream Box -->
+                        <div class="relative rounded-lg overflow-hidden bg-slate-950 border border-borderCol aspect-video flex items-center justify-center">
+                            <div class="absolute inset-0 grid-bg opacity-20"></div>
+                         
+                            <div class="absolute w-12 h-12 border-2 border-accentBlue rounded-full flex items-center justify-center animate-pulse">
+                                <div class="w-1 h-1 bg-red-500 rounded-full"></div>
+                            </div>
+                            <div class="absolute inset-x-0 top-2 px-3 flex justify-between text-[10px] font-mono text-accentBlue font-bold">
+                                <span>Dx: +1.2px | Dy: -0.4px</span>
+                                <span>H_k: 0.994</span>
+                            </div>
+                            <div class="absolute bottom-2 inset-x-2 bg-slate-900/95 backdrop-blur border border-borderCol rounded-md p-1.5 flex justify-between items-center text-[11px] font-mono shadow">
+                                <span class="text-successGreen font-bold flex items-center gap-1"><i data-lucide="wifi" class="w-3 h-3"></i> Lab Wi-Fi Connected</span>
+                                <span class="text-textDark font-bold">30 FPS</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 text-center">
+                            <p class="text-[11px] text-textMuted font-mono font-semibold">Portable tablet & phone monitoring for laser control rooms.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Android APK Section -->
+    <section id="download" class="py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+            <span class="text-accentBlue font-mono text-xs uppercase tracking-widest bg-accentBlue/10 px-3 py-1 rounded-full border border-accentBlue/20 font-bold">Mobile Release</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold mt-2 text-textDark">Download Aptis Android Client</h2>
+            <p class="text-textMuted mt-1 text-xs sm:text-sm font-medium">Install the APK directly on your Android device to connect with your laboratory telemetry server.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
+            <!-- Download Action Card -->
+            <div class="bg-cardBg border border-borderCol rounded-2xl p-6 shadow-sm space-y-5">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 rounded-xl bg-accentBlue/10 border border-accentBlue/30 flex items-center justify-center text-accentBlue">
+                        <i data-lucide="smartphone" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-textDark text-base">Aptis Telemetry Client v1.0.4</h3>
+                        <p class="text-textMuted text-xs font-mono">Compatible with Android 9.0 and newer (Universal APK)</p>
+                    </div>
+                </div>
+
+                <p class="text-textMuted text-xs sm:text-sm leading-relaxed font-medium">
+                    Download the binary APK directly to your mobile device or point to the GitHub repository artifacts. Access documentation and release notes directly through GitHub Pages.
+                </p>
+
+                <div class="pt-2 flex flex-col sm:flex-row gap-3">
+                    <a href="https://vladgaciu.github.io/aptistelemetry-site/" target="_blank" rel="noopener" class="flex-1 flex items-center justify-center space-x-2 bg-accentBlue hover:bg-sky-400 text-slate-950 font-mono font-bold px-6 py-3 rounded-xl transition shadow-md text-xs">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        <span>Download APK & GitHub Docs</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Installation Instructions Card -->
+            <div class="bg-cardBg border border-borderCol rounded-2xl p-6 shadow-sm space-y-4">
+                <h3 class="font-bold text-textDark text-base flex items-center gap-2">
+                    <i data-lucide="shield-check" class="w-5 h-5 text-accentBlue"></i>
+                    <span>Sideloading Instructions</span>
+                </h3>
+                <ol class="space-y-3 font-mono text-xs text-textMuted list-decimal list-inside leading-relaxed">
+                    <li><strong class="text-textDark">Download:</strong> Tap the download button from your Android device browser via GitHub Pages.</li>
+                    <li><strong class="text-textDark">Allow Installation:</strong> If prompted by Android security, enable "Install from unknown sources" for your browser.</li>
+                    <li><strong class="text-textDark">Configure Server:</strong> Open Aptis Mobile, enter your lab server IP address and port `5000`.</li>
+                    <li><strong class="text-textDark">Monitor:</strong> Enjoy real-time touch-to-set target crosshairs and health scores right at the optical table.</li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Simulated HUD Section with Gaussian Pulse Canvas -->
+    <section id="simulator" class="py-14 bg-slate-900 text-slate-100 border-y border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-8">
+                <span class="text-sky-400 font-mono text-xs uppercase tracking-widest bg-sky-500/10 px-3 py-1 rounded-full border border-sky-500/30 font-bold">Live Interface Preview</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold mt-2 text-white">Interactive Operator HUD Simulator</h2>
+                <p class="text-slate-400 mt-1 text-xs sm:text-sm font-medium">Click anywhere on the Gaussian pulse beam profile below to relocate the tracking target center.</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto bg-slate-950 border border-slate-800 rounded-2xl p-5 shadow-2xl">
+             
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-4 mb-4 border-b border-slate-800">
+                    <div>
+                        <h3 class="font-mono font-bold text-white text-sm sm:text-base">APTIS // MOBILE TELEMETRY HUD</h3>
+                        <p class="text-[11px] text-slate-400 font-mono font-bold">Android Client Preview (HTML5 Canvas Simulation)</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <span id="sim-status-badge" class="px-2.5 py-1 rounded-lg text-xs font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center gap-1.5 font-bold">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            OPTIMAL LOCK
+                        </span>
+                     
+                        <div class="bg-slate-900 border border-slate-700 rounded-lg p-0.5 flex gap-1 font-mono text-xs">
+                            <button onclick="setSimMode('beginner')" id="simBtnBeg" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition font-bold text-xs">Beginner</button>
+                            <button onclick="setSimMode('expert')" id="simBtnExp" class="px-2.5 py-1 rounded bg-sky-600 text-white font-bold transition shadow-sm text-xs">Expert HUD</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="simAlignmentBar" class="mb-4 p-3 rounded-xl bg-emerald-950/50 border border-emerald-500/30 flex justify-between items-center text-xs font-mono text-emerald-400 font-bold transition-all shadow-sm">
+                    <span id="simAlignmentText">ALIGNMENT LOCKED (Optimal Deviation &lt; 15px)</span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
+                 
+                    <!-- Gaussian Pulse Render Area -->
+                    <div class="md:col-span-7">
+                        <div class="relative rounded-xl overflow-hidden bg-slate-900 border-2 border-slate-700 aspect-video flex items-center justify-center cursor-crosshair shadow-inner">
+                            <canvas id="gaussianCanvas" class="w-full h-full block" onclick="handleCanvasClick(event)"></canvas>
+                         
+                            <!-- Target Overlay Marker -->
+                            <div id="targetCrosshair" class="absolute w-8 h-8 -ml-4 -mt-4 border border-cyan-400 rounded-full flex items-center justify-center pointer-events-none transition-all duration-75" style="left: 50%; top: 50%;">
+                                <div class="w-full h-[1px] bg-cyan-400"></div>
+                                <div class="absolute h-full w-[1px] bg-cyan-400"></div>
+                            </div>
+
+                            <div class="absolute bottom-2 left-2 px-2 py-0.5 bg-slate-900/90 rounded text-[10px] font-mono text-slate-200 backdrop-blur border border-slate-700 font-bold shadow">
+                                Click canvas to set target center
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-5 space-y-3">
+                        <div id="simExpertPanel" class="space-y-2.5 font-mono">
+                            <div class="grid grid-cols-2 gap-2.5">
+                                <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-lg shadow-sm">
+                                    <span class="text-[9px] text-slate-400 block font-bold">OFFSET (Dx, Dy)</span>
+                                    <strong id="simDxDy" class="text-white text-xs font-extrabold">+0, 0 px</strong>
+                                </div>
+                                <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-lg shadow-sm">
+                                    <span class="text-[9px] text-slate-400 block font-bold">RADIAL DIST</span>
+                                    <strong id="simDist" class="text-sky-400 text-xs font-extrabold">0.0 px</strong>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2.5">
+                                <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-lg shadow-sm">
+                                    <span class="text-[9px] text-slate-400 block font-bold">D4σ WIDTH</span>
+                                    <strong id="simD4s" class="text-white text-xs font-extrabold">142.4 px</strong>
+                                </div>
+                                <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-lg shadow-sm">
+                                    <span class="text-[9px] text-slate-400 block font-bold">HEALTH (H_k)</span>
+                                    <strong id="simHealth" class="text-emerald-400 text-xs font-extrabold">0.998</strong>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900 border border-slate-800 p-3 rounded-lg space-y-1.5 shadow-sm">
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-200 font-bold text-[11px]">VPI Forbidden Radius:</span>
+                                    <span id="simRadiusVal" class="text-sky-400 font-extrabold">27</span>
+                                </div>
+                                <input type="range" min="5" max="80" value="27" class="w-full accent-sky-500 cursor-pointer" oninput="updateSimRadius(this.value)">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Relevant Publications & Research Section -->
+    <section id="publications" class="py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+            <span class="text-accentBlue font-mono text-xs uppercase tracking-widest bg-accentBlue/10 px-3 py-1 rounded-full border border-accentBlue/20 font-bold">Academic Foundation</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold mt-2 text-textDark">Related Research & Publications</h2>
+            <p class="text-textMuted mt-1 text-xs sm:text-sm font-medium">Peer-reviewed literature by Vlad Gaciu supporting machine learning beam classification, high-power laser diagnostics, and plasma analysis.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+         
+            <!-- Publication 1 -->
+            <div class="bg-cardBg border border-borderCol rounded-xl p-5 shadow-sm hover:border-accentBlue/50 transition flex flex-col justify-between group">
+                <div>
+                    <div class="w-9 h-9 rounded-lg bg-accentBlue/10 border border-accentBlue/30 flex items-center justify-center text-accentBlue mb-3 group-hover:scale-105 transition">
+                        <i data-lucide="book-open" class="w-4 h-4"></i>
+                    </div>
+                    <span class="text-[9px] font-mono uppercase tracking-wider text-accentBlue font-bold bg-accentBlue/10 px-2 py-0.5 rounded">Machine Learning & Science</span>
+                    <h3 class="font-bold text-textDark text-sm sm:text-base mt-2">Real-time classification of petawatt laser beam profiles</h3>
+                    <p class="text-textMuted text-xs mt-2 leading-relaxed font-medium">
+                        <em>Machine Learning: Science and Technology</em>, 2026. Automated feature extraction and real-time classification architectures for high-power laser facilities.
+                    </p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-borderCol">
+                    <a href="https://scholar.google.com/citations?user=oCFiGWcAAAAJ&hl=en" target="_blank" rel="noopener" class="inline-flex items-center space-x-1.5 text-xs font-mono font-bold text-accentBlue hover:text-sky-400 transition">
+                        <span>View on Google Scholar</span>
+                        <i data-lucide="external-link" class="w-3 h-3"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Publication 2 -->
+            <div class="bg-cardBg border border-borderCol rounded-xl p-5 shadow-sm hover:border-accentBlue/50 transition flex flex-col justify-between group">
+                <div>
+                    <div class="w-9 h-9 rounded-lg bg-accentBlue/10 border border-accentBlue/30 flex items-center justify-center text-accentBlue mb-3 group-hover:scale-105 transition">
+                        <i data-lucide="book-open" class="w-4 h-4"></i>
+                    </div>
+                    <span class="text-[9px] font-mono uppercase tracking-wider text-accentBlue font-bold bg-accentBlue/10 px-2 py-0.5 rounded">Laser Diagnostics</span>
+                    <h3 class="font-bold text-textDark text-sm sm:text-base mt-2">Classification of laser beam profiles using machine learning at the ELI-NP high power laser system</h3>
+                    <p class="text-textMuted text-xs mt-2 leading-relaxed font-medium">
+                        <em>AIP Advances</em>, 2024. Experimental application of machine learning classifiers for near-field and far-field beam quality characterization at ELI-NP.
+                    </p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-borderCol">
+                    <a href="https://scholar.google.com/citations?user=oCFiGWcAAAAJ&hl=en" target="_blank" rel="noopener" class="inline-flex items-center space-x-1.5 text-xs font-mono font-bold text-accentBlue hover:text-sky-400 transition">
+                        <span>View on Google Scholar</span>
+                        <i data-lucide="external-link" class="w-3 h-3"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Publication 3 -->
+            <div class="bg-cardBg border border-borderCol rounded-xl p-5 shadow-sm hover:border-accentBlue/50 transition flex flex-col justify-between group">
+                <div>
+                    <div class="w-9 h-9 rounded-lg bg-accentBlue/10 border border-accentBlue/30 flex items-center justify-center text-accentBlue mb-3 group-hover:scale-105 transition">
+                        <i data-lucide="book-open" class="w-4 h-4"></i>
+                    </div>
+                    <span class="text-[9px] font-mono uppercase tracking-wider text-accentBlue font-bold bg-accentBlue/10 px-2 py-0.5 rounded">Plasma Physics</span>
+                    <h3 class="font-bold text-textDark text-sm sm:text-base mt-2">Computer vision-based image analysis to characterize turbulent strongly coupled dusty plasma</h3>
+                    <p class="text-textMuted text-xs mt-2 leading-relaxed font-medium">
+                        <em>Univ. Politehnica Bucharest, Sci. Bull. A</em>, 2025. Computer vision algorithms and contour segmentation for analyzing complex plasma flow dynamics.
+                    </p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-borderCol">
+                    <a href="https://scholar.google.com/citations?user=oCFiGWcAAAAJ&hl=en" target="_blank" rel="noopener" class="inline-flex items-center space-x-1.5 text-xs font-mono font-bold text-accentBlue hover:text-sky-400 transition">
+                        <span>View on Google Scholar</span>
+                        <i data-lucide="external-link" class="w-3 h-3"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-8 text-center">
+            <a href="https://scholar.google.com/citations?user=oCFiGWcAAAAJ&hl=en" target="_blank" rel="noopener" class="inline-flex items-center space-x-2 bg-cardBg text-textDark hover:text-accentBlue border border-borderCol font-mono font-bold px-5 py-2.5 rounded-xl transition shadow-sm text-xs uppercase tracking-wider">
+                <i data-lucide="graduation-cap" class="w-4 h-4 text-accentBlue"></i>
+                <span>Explore Full Google Scholar Profile (Vlad Gaciu)</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Architecture Overview Section -->
+    <section id="architecture" class="py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+            <span class="text-accentBlue font-mono text-xs uppercase tracking-widest bg-accentBlue/10 px-3 py-1 rounded-full border border-accentBlue/20 font-bold">Open Source Core</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold mt-2 text-textDark">Modular Software Architecture</h2>
+            <p class="text-textMuted mt-1 text-xs sm:text-sm font-medium">Built with transparency and extensibility in mind for research laboratories worldwide.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+         
+            <div class="bg-cardBg border border-borderCol rounded-xl p-5 shadow-sm hover:border-accentBlue/50 transition group">
+                <div class="w-10 h-10 rounded-lg bg-accentBlue/10 border border-accentBlue/30 flex items-center justify-center text-accentBlue mb-3 group-hover:scale-105 transition">
+                    <i data-lucide="server" class="w-5 h-5"></i>
+                </div>
+                <h3 class="font-bold text-textDark text-sm sm:text-base">Flask REST Backend</h3>
+                <p class="text-textMuted text-xs mt-2 leading-relaxed font-medium">
+                    Lightweight Python server providing local JSON telemetry endpoints and MJPEG video streaming feeds.
+                </p>
+            </div>
+
+            <div class="bg-cardBg border border-borderCol rounded-xl p-5 shadow-sm hover:border-accentBlue/50 transition group">
+                <div class="w-10 h-10 rounded-lg bg-accentBlue/10 border border-accentBlue/30 flex items-center justify-center text-accentBlue mb-3 group-hover:scale-105 transition">
+                    <i data-lucide="eye" class="w-5 h-5"></i>
+                </div>
+                <h3 class="font-bold text-textDark text-sm sm:text-base">OpenCV Processing</h3>
+                <p class="text-textMuted text-xs mt-2 leading-relaxed font-medium">
+                    Grayscale image moments combined with Otsu adaptive thresholding for robust sub-pixel beam tracking.
+                </p>
+            </div>
+
+            <div class="bg-cardBg border border-borderCol rounded-xl p-5 shadow-sm hover:border-accentBlue/50 transition group">
+                <div class="w-10 h-10 rounded-lg bg-accentBlue/10 border border-accentBlue/30 flex items-center justify-center text-accentBlue mb-3 group-hover:scale-105 transition">
+                    <i data-lucide="cpu" class="w-5 h-5"></i>
+                </div>
+                <h3 class="font-bold text-textDark text-sm sm:text-base">2D FFT Health Index</h3>
+                <p class="text-textMuted text-xs mt-2 leading-relaxed font-medium">
+                    Frequency domain analysis evaluating forbidden energy ratios to quantify beam stability ($H_k$).
+                </p>
+            </div>
+
+            <div class="bg-cardBg border border-borderCol rounded-xl p-5 shadow-sm hover:border-accentBlue/50 transition group">
+                <div class="w-10 h-10 rounded-lg bg-accentBlue/10 border border-accentBlue/30 flex items-center justify-center text-accentBlue mb-3 group-hover:scale-105 transition">
+                    <i data-lucide="smartphone" class="w-5 h-5"></i>
+                </div>
+                <h3 class="font-bold text-textDark text-sm sm:text-base">Android Companion</h3>
+                <p class="text-textMuted text-xs mt-2 leading-relaxed font-medium">
+                    Native mobile client allowing optical table operators to monitor alignment feeds wirelessly in real time.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Corporate Footer -->
+    <footer class="border-t border-borderCol bg-lightBg py-8 text-center text-xs font-mono text-textDark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2.5">
+            <div class="flex justify-center items-center space-x-2.5">
+                <div class="w-5 h-5 rounded-md bg-accentBlue/20 flex items-center justify-center text-accentBlue overflow-hidden p-0.5">
+                    <img src="./app_icon.png" alt="Aptis Icon" class="w-full h-full object-contain">
+                </div>
+                <span class="text-textDark font-extrabold tracking-wider text-xs">APTIS // ANDROID MOBILE PHOTONICS TELEMETRY</span>
+            </div>
+            <p class="text-textMuted font-sans font-medium text-xs">An open-source initiative for real-time laser beam tracking and spectral telemetry.</p>
+            <p class="text-textDark font-bold text-[11px]">&copy; 2026 Aptis Contributors &mdash; Released under the MIT License.</p>
+        </div>
+    </footer>
+
+    <!-- Interactive Gaussian Pulse & HUD Simulation Script -->
+    <script>
+        lucide.createIcons();
+
+        let simMode = 'expert';
+
+        function setSimMode(mode) {
+            simMode = mode;
+            const btnBeg = document.getElementById('simBtnBeg');
+            const btnExp = document.getElementById('simBtnExp');
+            const expertPanel = document.getElementById('simExpertPanel');
+
+            if (mode === 'beginner') {
+                btnBeg.className = "px-2.5 py-1 rounded bg-sky-600 text-white font-bold transition shadow-sm text-xs";
+                btnExp.className = "px-2.5 py-1 rounded text-slate-400 hover:text-white transition font-bold text-xs";
+                expertPanel.style.display = 'none';
+            } else {
+                btnExp.className = "px-2.5 py-1 rounded bg-sky-600 text-white font-bold transition shadow-sm text-xs";
+                btnBeg.className = "px-2.5 py-1 rounded text-slate-400 hover:text-white transition font-bold text-xs";
+                expertPanel.style.display = 'block';
+            }
+        }
+
+        const canvas = document.getElementById('gaussianCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = 640;
+        canvas.height = 360;
+
+        let beamX = canvas.width / 2;
+        let beamY = canvas.height / 2;
+        let targetX = canvas.width / 2;
+        let targetY = canvas.height / 2;
+        let time = 0;
+
+        function handleCanvasClick(event) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            targetX = (event.clientX - rect.left) * scaleX;
+            targetY = (event.clientY - rect.top) * scaleY;
+
+            const crosshair = document.getElementById('targetCrosshair');
+            crosshair.style.left = ((event.clientX - rect.left) / rect.width) * 100 + '%';
+            crosshair.style.top = ((event.clientY - rect.top) / rect.height) * 100 + '%';
+        }
+
+        function renderGaussianPulse() {
+            time += 0.05;
+            beamX = (canvas.width / 2) + Math.sin(time * 0.8) * 8;
+            beamY = (canvas.height / 2) + Math.cos(time * 0.6) * 8;
+
+            ctx.fillStyle = '#020617';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const maxRadius = 140;
+            const grad = ctx.createRadialGradient(beamX, beamY, 2, beamX, beamY, maxRadius);
+            grad.addColorStop(0, 'rgba(56, 189, 248, 1)');
+            grad.addColorStop(0.3, 'rgba(14, 165, 233, 0.6)');
+            grad.addColorStop(0.7, 'rgba(30, 58, 138, 0.2)');
+            grad.addColorStop(1, 'rgba(2, 6, 23, 0)');
+
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(beamX, beamY, maxRadius, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#22c55e';
+            ctx.beginPath();
+            ctx.arc(beamX, beamY, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            const dx = Math.round(beamX - targetX);
+            const dy = Math.round(beamY - targetY);
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            document.getElementById('simDxDy').innerText = `${dx}, ${dy} px`;
+            document.getElementById('simDist').innerText = `${dist.toFixed(1)} px`;
+         
+            const health = Math.max(0.85, (1.0 - (dist / 300)).toFixed(3));
+            document.getElementById('simHealth').innerText = health;
+
+            const bar = document.getElementById('simAlignmentBar');
+            const badge = document.getElementById('sim-status-badge');
+
+            if (dist < 15) {
+                bar.className = "mb-4 p-3 rounded-xl bg-emerald-950/50 border border-emerald-500/30 flex justify-between items-center text-xs font-mono text-emerald-400 font-bold transition-all shadow-sm";
+                bar.innerHTML = `<span>ALIGNMENT LOCKED (Optimal Deviation &lt; 15px)</span><span class="w-2 h-2 rounded-full bg-emerald-400"></span>`;
+                badge.className = "px-2.5 py-1 rounded-lg text-xs font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center gap-1.5 font-bold";
+                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>OPTIMAL LOCK`;
+            } else {
+                bar.className = "mb-4 p-3 rounded-xl bg-amber-950/50 border border-amber-500/30 flex justify-between items-center text-xs font-mono text-amber-400 font-bold transition-all shadow-sm";
+                bar.innerHTML = `<span>ALIGNMENT DEVIATION (${dist.toFixed(1)} px)</span><span class="w-2 h-2 rounded-full bg-amber-400"></span>`;
+                badge.className = "px-2.5 py-1 rounded-lg text-xs font-mono bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center gap-1.5 font-bold";
+                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>DEVIATION`;
+            }
+
+            requestAnimationFrame(renderGaussianPulse);
+        }
+
+        requestAnimationFrame(renderGaussianPulse);
+
+        function updateSimRadius(val) {
+            document.getElementById('simRadiusVal').innerText = val;
+        }
+    </script>
+</body>
+</html>

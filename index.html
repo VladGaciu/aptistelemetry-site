@@ -1,51 +1,629 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aptis Telemetry & Laser Diagnostics</title>
+    <title>Aptis // Laser Beam Tracking & Telemetry System</title>
+    <!-- Website Icon linked directly to app_icon.png in the same folder -->
+    <link rel="icon" type="image/png" href="./app_icon.png">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lightBg: '#F8FAFC',
+                        cardBg: '#FFFFFF',
+                        cardHover: '#F1F5F9',
+                        borderCol: '#CBD5E1',
+                        accentBlue: '#0284C7',
+                        blueHighlight: '#0369A1',
+                        successGreen: '#15803D',
+                        warningAmber: '#B45309',
+                        textDark: '#0F172A',
+                        textMuted: '#334155',
+                    },
+                    fontFamily: {
+                        mono: ['SF Mono', 'Fira Code', 'Courier New', monospace],
+                        sans: ['Inter', 'system-ui', '-apple-system', sans-serif]
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-            margin: 0;
-            padding: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+        .grid-bg {
+            background-image: linear-gradient(to right, rgba(148, 163, 184, 0.2) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(148, 163, 184, 0.2) 1px, transparent 1px);
+            background-size: 48px 48px;
         }
-        .container {
-            max-width: 700px;
-            background: #1e293b;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-            border: 1px solid #334155;
+        .radial-gradient {
+            background: radial-gradient(circle at 50% 20%, rgba(2, 132, 199, 0.08) 0%, rgba(248, 250, 252, 0) 70%);
         }
-        h1 { color: #38bdf8; margin-top: 0; }
-        p { line-height: 1.6; color: #94a3b8; }
-        .btn {
-            display: inline-block;
-            background-color: #0284c7;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            margin-top: 20px;
-            transition: background 0.2s;
-        }
-        .btn:hover { background-color: #0369a1; }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>Aptis Telemetry & Laser Diagnostics</h1>
-        <p>Real-time machine learning beam profile classification, spatial noise monitoring, and automated multi-degree-of-freedom optical alignment tools for petawatt-class laser systems.</p>
-        <p>This repository hosts the documentation, Android APK builds, and open-source telemetry source code.</p>
-        <a href="http://46.101.190.76/" class="btn">Return to Main Server</a>
-    </div>
+<body class="bg-lightBg text-textDark font-sans antialiased selection:bg-accentBlue selection:text-white radial-gradient min-h-screen">
+
+    <!-- Top Corporate Navigation Bar -->
+    <header class="sticky top-0 z-50 backdrop-blur-xl bg-lightBg/90 border-b border-borderCol shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-accentBlue to-blueHighlight flex items-center justify-center shadow-md overflow-hidden p-1">
+                    <img src="./app_icon.png" alt="Aptis Logo" class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <span class="font-extrabold tracking-widest text-base sm:text-lg text-textDark uppercase">APTIS</span>
+                    <span class="block text-[10px] text-textMuted tracking-widest uppercase font-mono font-bold">Enterprise Laser Telemetry</span>
+                </div>
+            </div>
+            
+            <nav class="hidden md:flex items-center space-x-8 text-xs font-mono uppercase tracking-wider font-semibold">
+                <a href="#overview" class="text-textMuted hover:text-accentBlue transition">Overview</a>
+                <a href="#specs" class="text-textMuted hover:text-accentBlue transition">Specifications</a>
+                <a href="#simulator" class="text-textMuted hover:text-accentBlue transition">Live HUD</a>
+                <a href="#publications" class="text-textMuted hover:text-accentBlue transition">Publications</a>
+                <a href="#architecture" class="text-textMuted hover:text-accentBlue transition">Architecture</a>
+                <a href="#deploy" class="text-textMuted hover:text-accentBlue transition">NixOS Deployment</a>
+            </nav>
+
+            <div class="flex items-center space-x-4">
+                <div class="hidden sm:flex items-center space-x-2 px-3.5 py-1.5 rounded-lg bg-cardBg border border-borderCol text-xs font-mono shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-successGreen animate-pulse"></span>
+                    <span class="text-textDark font-semibold">Daemon Port: <strong class="text-accentBlue">5000</strong></span>
+                </div>
+                <a href="#simulator" class="bg-accentBlue text-white font-bold px-4 py-2.5 rounded-lg text-xs font-mono hover:bg-blueHighlight transition shadow-md">
+                    Launch HUD
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="overview" class="relative overflow-hidden pt-28 pb-36 grid-bg border-b border-borderCol">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+               
+                <div class="lg:col-span-7 space-y-6 text-left">
+                    <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-accentBlue/10 border border-accentBlue/30 text-accentBlue font-mono text-xs font-bold">
+                        <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                        <span>High-Power Laser Diagnostics & 2D FFT Indexing</span>
+                    </div>
+                   
+                    <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.1] text-textDark">
+                        Sub-Pixel Beam Tracking & <br><span class="text-accentBlue">Spectral Health Analysis</span>
+                    </h1>
+                   
+                    <p class="text-textMuted text-base sm:text-lg max-w-xl font-sans leading-relaxed font-medium">
+                        Engineered by Aptis for high-power laser facilities. Features real-time OpenCV sub-pixel centroid tracking, Variation-Power Index (VPI) frequency diagnostics, and responsive mobile operator oversight.
+                    </p>
+
+                    <div class="flex flex-wrap gap-4 pt-3">
+                        <a href="#simulator" class="flex items-center space-x-2 bg-accentBlue text-white font-mono font-bold px-6 py-3.5 rounded-xl hover:bg-blueHighlight transition shadow-md">
+                            <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+                            <span>Interactive Telemetry HUD</span>
+                        </a>
+                        <a href="#deploy" class="flex items-center space-x-2 bg-cardBg text-textDark hover:text-accentBlue border border-borderCol font-mono font-semibold px-6 py-3.5 rounded-xl transition shadow-sm">
+                            <i data-lucide="terminal" class="w-4 h-4 text-accentBlue"></i>
+                            <span>NixOS Hardening Guide</span>
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 pt-8 border-t border-borderCol font-mono text-xs">
+                        <div>
+                            <span class="text-textMuted block uppercase font-bold">LATENCY</span>
+                            <strong class="text-textDark text-base font-extrabold">&lt; 35 ms</strong>
+                        </div>
+                        <div>
+                            <span class="text-textMuted block uppercase font-bold">STREAMING</span>
+                            <strong class="text-accentBlue text-base font-extrabold">30 FPS MJPEG</strong>
+                        </div>
+                        <div>
+                            <span class="text-textMuted block uppercase font-bold">OS ENVIRONMENT</span>
+                            <strong class="text-textDark text-base font-extrabold">NixOS 24.05+</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Graphic Console Preview -->
+                <div class="lg:col-span-5">
+                    <div class="bg-cardBg border border-borderCol rounded-2xl p-4 shadow-xl relative">
+                        <div class="flex items-center justify-between pb-3 mb-3 border-b border-borderCol">
+                            <div class="flex items-center space-x-2 font-mono text-xs text-textDark font-bold">
+                                <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
+                                <span class="w-3 h-3 rounded-full bg-yellow-500 inline-block"></span>
+                                <span class="w-3 h-3 rounded-full bg-successGreen inline-block"></span>
+                                <span class="ml-2">stream_server.py</span>
+                            </div>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-accentBlue/15 text-accentBlue font-bold">PORT 5000</span>
+                        </div>
+                       
+                        <!-- Simulated Live HUD Stream Box -->
+                        <div class="relative rounded-xl overflow-hidden bg-slate-950 border border-borderCol aspect-video flex items-center justify-center">
+                            <div class="absolute inset-0 grid-bg opacity-20"></div>
+                           
+                            <div class="absolute w-16 h-16 border-2 border-accentBlue rounded-full flex items-center justify-center animate-pulse">
+                                <div class="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
+                            </div>
+                            <div class="absolute inset-x-0 top-2 px-3 flex justify-between text-[10px] font-mono text-accentBlue font-bold">
+                                <span>Dx: +1.2px | Dy: -0.4px</span>
+                                <span>H_k: 0.994</span>
+                            </div>
+                            <div class="absolute bottom-2 inset-x-2 bg-white/95 backdrop-blur border border-borderCol rounded-lg p-2 flex justify-between items-center text-xs font-mono shadow">
+                                <span class="text-successGreen font-bold flex items-center gap-1.5"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Optimal Alignment</span>
+                                <span class="text-textDark font-bold">VPI Mask: 27px</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 text-center">
+                            <p class="text-xs text-textMuted font-mono font-semibold">Real-time mobile & desktop operator mirroring.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Hardware & Technical Specifications Section -->
+    <section id="specs" class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="text-accentBlue font-mono text-xs uppercase tracking-widest bg-accentBlue/10 px-3 py-1 rounded-full border border-accentBlue/20 font-bold">Core Technology</span>
+            <h2 class="text-3xl font-extrabold mt-3 text-textDark">Engineered for High-Power Precision</h2>
+            <p class="text-textMuted mt-2 text-sm font-medium">Discover the underlying mathematical models and optical algorithms packaged within the Aptis framework.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+           
+            <div class="bg-cardBg border border-borderCol rounded-2xl p-6 shadow-sm hover:border-accentBlue/50 transition group">
+                <div class="w-12 h-12 rounded-xl bg-accentBlue/10 border border-accentBlue/30 flex items-center justify-center text-accentBlue mb-4 group-hover:scale-110 transition">
+                    <i data-lucide="activity" class="w-6 h-6"></i>
+                </div>
+                <h3 class="font-bold text-textDark text-lg">2D FFT Spectral Indexing</h3>
+                <p class="text-textMuted text-xs sm:text-sm mt-3 leading-relaxed font-medium">
+                    Computes near-field Variation-Power Index (VPI) by transforming spatial beam frames into the frequency domain, applying custom forbidden frequency masks to evaluate health score ($H_k$).
+                </p>
+            </div>
+
+            <div class="bg-cardBg border border-borderCol rounded-2xl p-6 shadow-sm hover:border-accentBlue/50 transition group">
+                <div class="w-12 h-12 rounded-xl bg-accentBlue/10 border border-accentBlue/30 flex items-center justify-center text-accentBlue mb-4 group-hover:scale-110 transition">
+                    <i data-lucide="crosshair" class="w-6 h-6"></i>
+                </div>
+                <h3 class="font-bold text-textDark text-lg">Sub-Pixel OpenCV Centroids</h3>
+                <p class="text-textMuted text-xs sm:text-sm mt-3 leading-relaxed font-medium">
+                    Employs grayscale image moments combined with Otsu adaptive thresholding and contour morphological enclosure to extract precise spatial offset coordinates ($Dx, Dy$).
+                </p>
+            </div>
+
+            <div class="bg-cardBg border border-borderCol rounded-2xl p-6 shadow-sm hover:border-accentBlue/50 transition group">
+                <div class="w-12 h-12 rounded-xl bg-accentBlue/10 border border-accentBlue/30 flex items-center justify-center text-accentBlue mb-4 group-hover:scale-110 transition">
+                    <i data-lucide="smartphone" class="w-6 h-6"></i>
+                </div>
+                <h3 class="font-bold text-textDark text-lg">Multi-Device Mobile HUD</h3>
+                <p class="text-textMuted text-xs sm:text-sm mt-3 leading-relaxed font-medium">
+                    Instant touch-to-set target crosshairs, toggleable Beginner and Expert diagnostic panels, and automated layout snapshot rendering directly in mobile browsers.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Interactive Simulated HUD Section with Gaussian Pulse Canvas -->
+    <section id="simulator" class="py-20 bg-slate-200/50 border-y border-borderCol">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <span class="text-accentBlue font-mono text-xs uppercase tracking-widest bg-accentBlue/10 px-3 py-1 rounded-full border border-accentBlue/20 font-bold">Live Interface Preview</span>
+                <h2 class="text-3xl font-extrabold mt-3 text-textDark">Interactive Operator HUD Simulator</h2>
+                <p class="text-textMuted mt-2 text-sm font-medium">Click anywhere on the Gaussian pulse beam profile below to relocate the tracking target center.</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto bg-cardBg border border-borderCol rounded-2xl p-6 shadow-xl">
+               
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 mb-6 border-b border-borderCol">
+                    <div>
+                        <h3 class="font-mono font-bold text-textDark text-base sm:text-lg">APTIS // TELEMETRY CONSOLE</h3>
+                        <p class="text-xs text-textMuted font-mono font-bold">Optical Node #01 (HTML5 Canvas Simulation)</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <span id="sim-status-badge" class="px-3 py-1 rounded-lg text-xs font-mono bg-successGreen/15 text-successGreen border border-successGreen/30 flex items-center gap-1.5 font-bold">
+                            <span class="w-2 h-2 rounded-full bg-successGreen animate-ping"></span>
+                            OPTIMAL LOCK
+                        </span>
+                       
+                        <div class="bg-lightBg border border-borderCol rounded-lg p-1 flex gap-1 font-mono text-xs">
+                            <button onclick="setSimMode('beginner')" id="simBtnBeg" class="px-3 py-1.5 rounded text-textMuted hover:text-textDark transition font-bold">Beginner</button>
+                            <button onclick="setSimMode('expert')" id="simBtnExp" class="px-3 py-1.5 rounded bg-accentBlue text-white font-bold transition shadow-sm">Expert HUD</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="simAlignmentBar" class="mb-6 p-3.5 rounded-xl bg-successGreen/10 border border-successGreen/30 flex justify-between items-center text-xs font-mono text-successGreen font-bold transition-all shadow-sm">
+                    <span id="simAlignmentText">ALIGNMENT LOCKED (Optimal Deviation &lt; 15px)</span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-successGreen"></span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                   
+                    <!-- Gaussian Pulse Render Area -->
+                    <div class="md:col-span-7">
+                        <div class="relative rounded-xl overflow-hidden bg-slate-950 border-2 border-borderCol aspect-video flex items-center justify-center cursor-crosshair shadow-inner">
+                            <canvas id="gaussianCanvas" class="w-full h-full block" onclick="handleCanvasClick(event)"></canvas>
+                           
+                            <!-- Target Overlay Marker -->
+                            <div id="targetCrosshair" class="absolute w-10 h-10 -ml-5 -mt-5 border border-cyan-400 rounded-full flex items-center justify-center pointer-events-none transition-all duration-75" style="left: 50%; top: 50%;">
+                                <div class="w-full h-[1px] bg-cyan-400"></div>
+                                <div class="absolute h-full w-[1px] bg-cyan-400"></div>
+                            </div>
+
+                            <div class="absolute bottom-2 left-2 px-2.5 py-1 bg-white/95 rounded text-[10px] font-mono text-textDark backdrop-blur border border-borderCol font-bold shadow">
+                                Click canvas to set target center
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-5 space-y-4">
+                        <div id="simExpertPanel" class="space-y-3 font-mono">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="bg-lightBg border border-borderCol p-3 rounded-xl shadow-sm">
+                                    <span class="text-[10px] text-textMuted block font-bold">OFFSET (Dx, Dy)</span>
+                                    <strong id="simDxDy" class="text-textDark text-sm font-extrabold">+0, 0 px</strong>
+                                </div>
+                                <div class="bg-lightBg border border-borderCol p-3 rounded-xl shadow-sm">
+                                    <span class="text-[10px] text-textMuted block font-bold">RADIAL DIST</span>
+                                    <strong id="simDist" class="text-accentBlue text-sm font-extrabold">0.0 px</strong>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="bg-lightBg border border-borderCol p-3 rounded-xl shadow-sm">
+                                    <span class="text-[10px] text-textMuted block font-bold">D4σ WIDTH</span>
+                                    <strong id="simD4s" class="text-textDark text-sm font-extrabold">142.4 px</strong>
+                                </div>
+                                <div class="bg-lightBg border border-borderCol p-3 rounded-xl shadow-sm">
+                                    <span class="text-[10px] text-textMuted block font-bold">HEALTH (H_k)</span>
+                                    <strong id="simHealth" class="text-successGreen text-sm font-extrabold">0.998</strong>
+                                </div>
+                            </div>
+
+                            <div class="bg-lightBg border border-borderCol p-3.5 rounded-xl space-y-2 shadow-sm">
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-textDark font-bold">VPI Forbidden Radius:</span>
+                                    <span id="simRadiusVal" class="text-accentBlue font-extrabold">27</span>
+                                </div>
+                                <input type="range" min="5" max="80" value="27" class="w-full accent-accentBlue cursor-pointer" oninput="updateSimRadius(this.value)">
+                            </div>
+
+                            <button onclick="alert('Layout snapshot downloaded successfully.')" class="w-full bg-accentBlue hover:bg-blueHighlight text-white font-bold py-2.5 rounded-xl border border-accentBlue/30 text-xs transition flex items-center justify-center gap-2 shadow-md">
+                                <i data-lucide="camera" class="w-4 h-4"></i>
+                                <span>Capture Layout Snapshot</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Relevant Publications & Research Section -->
+    <section id="publications" class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="text-accentBlue font-mono text-xs uppercase tracking-widest bg-accentBlue/10 px-3 py-1 rounded-full border border-accentBlue/20 font-bold">Academic Foundation</span>
+            <h2 class="text-3xl font-extrabold mt-3 text-textDark">Related Research & Publications</h2>
+            <p class="text-textMuted mt-2 text-sm font-medium">Peer-reviewed literature by Vlad Gaciu supporting machine learning beam classification, high-power laser diagnostics, and plasma analysis.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <!-- Publication 1 -->
+            <div class="bg-cardBg border border-borderCol rounded-2xl p-6 shadow-sm hover:border-accentBlue/50 transition flex flex-col justify-between group">
+                <div>
+                    <div class="w-10 h-10 rounded-xl bg-accentBlue/10 border border-accentBlue/30 flex items-center justify-center text-accentBlue mb-4 group-hover:scale-110 transition">
+                        <i data-lucide="book-open" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-[10px] font-mono uppercase tracking-wider text-accentBlue font-bold bg-accentBlue/10 px-2 py-0.5 rounded">Machine Learning & Science</span>
+                    <h3 class="font-bold text-textDark text-base mt-2">Real-time classification of petawatt laser beam profiles</h3>
+                    <p class="text-textMuted text-xs mt-2 leading-relaxed font-medium">
+                        <em>Machine Learning: Science and Technology</em>, 2026. Automated feature extraction and real-time classification architectures for high-power laser facilities.
+                    </p>
+                </div>
+                <div class="mt-6 pt-4 border-t border-borderCol">
+                    <a href="https://scholar.google.com/citations?user=oCFiGWcAAAAJ&hl=en" target="_blank" class="inline-flex items-center space-x-1.5 text-xs font-mono font-bold text-accentBlue hover:text-blueHighlight transition">
+                        <span>View on Google Scholar</span>
+                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Publication 2 -->
+            <div class="bg-cardBg border border-borderCol rounded-2xl p-6 shadow-sm hover:border-accentBlue/50 transition flex flex-col justify-between group">
+                <div>
+                    <div class="w-10 h-10 rounded-xl bg-accentBlue/10 border border-accentBlue/30 flex items-center justify-center text-accentBlue mb-4 group-hover:scale-110 transition">
+                        <i data-lucide="book-open" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-[10px] font-mono uppercase tracking-wider text-accentBlue font-bold bg-accentBlue/10 px-2 py-0.5 rounded">Laser Diagnostics</span>
+                    <h3 class="font-bold text-textDark text-base mt-2">Classification of laser beam profiles using machine learning at the ELI-NP high power laser system</h3>
+                    <p class="text-textMuted text-xs mt-2 leading-relaxed font-medium">
+                        <em>AIP Advances</em>, 2024. Experimental application of machine learning classifiers for near-field and far-field beam quality characterization at ELI-NP.
+                    </p>
+                </div>
+                <div class="mt-6 pt-4 border-t border-borderCol">
+                    <a href="https://scholar.google.com/citations?user=oCFiGWcAAAAJ&hl=en" target="_blank" class="inline-flex items-center space-x-1.5 text-xs font-mono font-bold text-accentBlue hover:text-blueHighlight transition">
+                        <span>View on Google Scholar</span>
+                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Publication 3 -->
+            <div class="bg-cardBg border border-borderCol rounded-2xl p-6 shadow-sm hover:border-accentBlue/50 transition flex flex-col justify-between group">
+                <div>
+                    <div class="w-10 h-10 rounded-xl bg-accentBlue/10 border border-accentBlue/30 flex items-center justify-center text-accentBlue mb-4 group-hover:scale-110 transition">
+                        <i data-lucide="book-open" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-[10px] font-mono uppercase tracking-wider text-accentBlue font-bold bg-accentBlue/10 px-2 py-0.5 rounded">Plasma Physics</span>
+                    <h3 class="font-bold text-textDark text-base mt-2">Computer vision-based image analysis to characterize turbulent strongly coupled dusty plasma</h3>
+                    <p class="text-textMuted text-xs mt-2 leading-relaxed font-medium">
+                        <em>Univ. Politehnica Bucharest, Sci. Bull. A</em>, 2025. Computer vision algorithms and contour segmentation for analyzing complex plasma flow dynamics.
+                    </p>
+                </div>
+                <div class="mt-6 pt-4 border-t border-borderCol">
+                    <a href="https://scholar.google.com/citations?user=oCFiGWcAAAAJ&hl=en" target="_blank" class="inline-flex items-center space-x-1.5 text-xs font-mono font-bold text-accentBlue hover:text-blueHighlight transition">
+                        <span>View on Google Scholar</span>
+                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-12 text-center">
+            <a href="https://scholar.google.com/citations?user=oCFiGWcAAAAJ&hl=en" target="_blank" class="inline-flex items-center space-x-2 bg-cardBg text-textDark hover:text-accentBlue border border-borderCol font-mono font-bold px-6 py-3 rounded-xl transition shadow-sm text-xs uppercase tracking-wider">
+                <i data-lucide="graduation-cap" class="w-4 h-4 text-accentBlue"></i>
+                <span>Explore Full Google Scholar Profile (Vlad Gaciu)</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Architecture Overview Section -->
+    <section id="architecture" class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="text-accentBlue font-mono text-xs uppercase tracking-widest bg-accentBlue/10 px-3 py-1 rounded-full border border-accentBlue/20 font-bold">Software Pipeline</span>
+            <h2 class="text-3xl font-extrabold mt-3 text-textDark">Robust System Architecture</h2>
+            <p class="text-textMuted mt-2 text-sm font-medium">Designed for maximum fault tolerance, threaded frame capture, and strict local subnet isolation.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+           
+            <div class="bg-cardBg border border-borderCol rounded-2xl p-6 shadow-sm hover:border-accentBlue/50 transition group">
+                <div class="w-12 h-12 rounded-xl bg-accentBlue/10 border border-accentBlue/30 flex items-center justify-center text-accentBlue mb-4 group-hover:scale-110 transition">
+                    <i data-lucide="server" class="w-6 h-6"></i>
+                </div>
+                <h3 class="font-bold text-textDark text-base">Flask REST Backend</h3>
+                <p class="text-textMuted text-xs mt-2 leading-relaxed font-medium">
+                    Threaded camera capture daemon with MJPEG streaming (`/video_feed`) and lightweight REST JSON telemetry endpoints.
+                </p>
+            </div>
+
+            <div class="bg-cardBg border border-borderCol rounded-2xl p-6 shadow-sm hover:border-accentBlue/50 transition group">
+                <div class="w-12 h-12 rounded-xl bg-accentBlue/10 border border-accentBlue/30 flex items-center justify-center text-accentBlue mb-4 group-hover:scale-110 transition">
+                    <i data-lucide="eye" class="w-6 h-6"></i>
+                </div>
+                <h3 class="font-bold text-textDark text-base">OpenCV Processing</h3>
+                <p class="text-textMuted text-xs mt-2 leading-relaxed font-medium">
+                    Grayscale moments centroid tracking combined with Otsu adaptive thresholding for sub-pixel beam localization.
+                </p>
+            </div>
+
+            <div class="bg-cardBg border border-borderCol rounded-2xl p-6 shadow-sm hover:border-accentBlue/50 transition group">
+                <div class="w-12 h-12 rounded-xl bg-accentBlue/10 border border-accentBlue/30 flex items-center justify-center text-accentBlue mb-4 group-hover:scale-110 transition">
+                    <i data-lucide="cpu" class="w-6 h-6"></i>
+                </div>
+                <h3 class="font-bold text-textDark text-base">2D FFT Health Index</h3>
+                <p class="text-textMuted text-xs mt-2 leading-relaxed font-medium">
+                    Frequency domain analysis evaluating forbidden energy ratios to generate quantitative laser health scores ($H_k$).
+                </p>
+            </div>
+
+            <div class="bg-cardBg border border-borderCol rounded-2xl p-6 shadow-sm hover:border-accentBlue/50 transition group">
+                <div class="w-12 h-12 rounded-xl bg-accentBlue/10 border border-accentBlue/30 flex items-center justify-center text-accentBlue mb-4 group-hover:scale-110 transition">
+                    <i data-lucide="shield" class="w-6 h-6"></i>
+                </div>
+                <h3 class="font-bold text-textDark text-base">NixOS Hardened</h3>
+                <p class="text-textMuted text-xs mt-2 leading-relaxed font-medium">
+                    Declarative firewall rule configuration (`networking.firewall.allowedTCPPorts = [ 5000 ]`) for secure remote access.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- NixOS Deployment Guide Section -->
+    <section id="deploy" class="py-24 bg-slate-200/50 border-t border-borderCol">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+               
+                <div class="lg:col-span-5 space-y-6 text-left">
+                    <span class="text-accentBlue font-mono text-xs uppercase tracking-widest bg-accentBlue/10 px-3 py-1 rounded-full border border-accentBlue/20 font-bold">Deployment Guide</span>
+                    <h2 class="text-3xl font-extrabold text-textDark">NixOS Firewall & Server Execution</h2>
+                    <p class="text-textMuted text-sm leading-relaxed font-medium">
+                        To allow mobile devices and remote workstations on your local subnet to access the Aptis telemetry server, configure port 5000 in your NixOS configuration.
+                    </p>
+                   
+                    <ul class="space-y-3 font-mono text-xs text-textDark font-bold">
+                        <li class="flex items-center gap-3">
+                            <i data-lucide="check-circle-2" class="w-4 h-4 text-accentBlue"></i>
+                            <span>Add port 5000 to configuration.nix firewall</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i data-lucide="check-circle-2" class="w-4 h-4 text-accentBlue"></i>
+                            <span>Run `sudo nixos-rebuild switch`</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i data-lucide="check-circle-2" class="w-4 h-4 text-accentBlue"></i>
+                            <span>Launch `python stream_server.py`</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Terminal Code Window -->
+                <div class="lg:col-span-7">
+                    <div class="bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl">
+                        <div class="bg-slate-950 px-4 py-3 border-b border-slate-800 flex items-center justify-between font-mono text-xs text-white font-semibold">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
+                                <span class="w-3 h-3 rounded-full bg-yellow-500 inline-block"></span>
+                                <span class="w-3 h-3 rounded-full bg-successGreen inline-block"></span>
+                                <span class="ml-2">bash — /etc/nixos/configuration.nix</span>
+                            </div>
+                            <span class="text-sky-400 font-bold">NixOS 24.05</span>
+                        </div>
+
+                        <div class="p-6 font-mono text-xs sm:text-sm space-y-4 text-left overflow-x-auto text-white">
+                            <div>
+                                <span class="text-sky-300 font-semibold"># 1. Open port 5000 in firewall configuration</span>
+                                <pre class="text-sky-200 bg-slate-950/80 p-3 rounded-lg border border-slate-800 mt-1 text-xs">networking.firewall = {
+  enable = true;
+  allowedTCPPorts = [ 5000 ];
+};</pre>
+                            </div>
+                            <div>
+                                <span class="text-sky-300 font-semibold"># 2. Rebuild system & run the telemetry server</span>
+                                <p class="text-sky-400 mt-1 font-bold">$ sudo nixos-rebuild switch</p>
+                                <p class="text-sky-400 font-bold">$ source venv/bin/activate</p>
+                                <p class="text-sky-400 font-bold">$ python stream_server.py</p>
+                                <p class="text-slate-300 text-xs mt-1">Running on http://0.0.0.0:5000</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Corporate Footer -->
+    <footer class="border-t border-borderCol bg-lightBg py-12 text-center text-xs font-mono text-textDark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+            <div class="flex justify-center items-center space-x-3">
+                <div class="w-6 h-6 rounded-lg bg-accentBlue/20 flex items-center justify-center text-accentBlue overflow-hidden p-0.5">
+                    <img src="./app_icon.png" alt="Aptis Icon" class="w-full h-full object-contain">
+                </div>
+                <span class="text-textDark font-extrabold tracking-wider">APTIS // ENTERPRISE PHOTONICS SYSTEMS</span>
+            </div>
+            <p class="text-textMuted font-sans font-medium">Advanced optical beam tracking and real-time telemetry packaging for high-power laser facilities.</p>
+            <p class="text-textDark font-bold">&copy; 2026 Aptis Inc. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Interactive Gaussian Pulse & HUD Simulation Script -->
+    <script>
+        lucide.createIcons();
+
+        let simMode = 'expert';
+
+        function setSimMode(mode) {
+            simMode = mode;
+            const btnBeg = document.getElementById('simBtnBeg');
+            const btnExp = document.getElementById('simBtnExp');
+            const expertPanel = document.getElementById('simExpertPanel');
+
+            if (mode === 'beginner') {
+                btnBeg.className = "px-3 py-1.5 rounded bg-accentBlue text-white font-bold transition shadow-sm";
+                btnExp.className = "px-3 py-1.5 rounded text-textMuted hover:text-textDark transition font-bold";
+                expertPanel.style.display = 'none';
+            } else {
+                btnExp.className = "px-3 py-1.5 rounded bg-accentBlue text-white font-bold transition shadow-sm";
+                btnBeg.className = "px-3 py-1.5 rounded text-textMuted hover:text-textDark transition font-bold";
+                expertPanel.style.display = 'block';
+            }
+        }
+
+        const canvas = document.getElementById('gaussianCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = 640;
+        canvas.height = 360;
+
+        let beamX = canvas.width / 2;
+        let beamY = canvas.height / 2;
+        let targetX = canvas.width / 2;
+        let targetY = canvas.height / 2;
+        let time = 0;
+
+        function handleCanvasClick(event) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            targetX = (event.clientX - rect.left) * scaleX;
+            targetY = (event.clientY - rect.top) * scaleY;
+
+            const crosshair = document.getElementById('targetCrosshair');
+            crosshair.style.left = ((event.clientX - rect.left) / rect.width) * 100 + '%';
+            crosshair.style.top = ((event.clientY - rect.top) / rect.height) * 100 + '%';
+        }
+
+        function renderGaussianPulse() {
+            time += 0.05;
+            beamX = (canvas.width / 2) + Math.sin(time * 0.8) * 8;
+            beamY = (canvas.height / 2) + Math.cos(time * 0.6) * 8;
+
+            ctx.fillStyle = '#020617';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const maxRadius = 140;
+            const grad = ctx.createRadialGradient(beamX, beamY, 2, beamX, beamY, maxRadius);
+            grad.addColorStop(0, 'rgba(56, 189, 248, 1)');
+            grad.addColorStop(0.3, 'rgba(14, 165, 233, 0.6)');
+            grad.addColorStop(0.7, 'rgba(30, 58, 138, 0.2)');
+            grad.addColorStop(1, 'rgba(2, 6, 23, 0)');
+
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(beamX, beamY, maxRadius, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#22c55e';
+            ctx.beginPath();
+            ctx.arc(beamX, beamY, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            const dx = Math.round(beamX - targetX);
+            const dy = Math.round(beamY - targetY);
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            document.getElementById('simDxDy').innerText = `${dx}, ${dy} px`;
+            document.getElementById('simDist').innerText = `${dist.toFixed(1)} px`;
+            
+            const health = Math.max(0.85, (1.0 - (dist / 300)).toFixed(3));
+            document.getElementById('simHealth').innerText = health;
+
+            const bar = document.getElementById('simAlignmentBar');
+            const badge = document.getElementById('sim-status-badge');
+
+            if (dist < 15) {
+                bar.className = "mb-6 p-3.5 rounded-xl bg-successGreen/10 border border-successGreen/30 flex justify-between items-center text-xs font-mono text-successGreen font-bold transition-all shadow-sm";
+                bar.innerHTML = `<span>ALIGNMENT LOCKED (Optimal Deviation &lt; 15px)</span><span class="w-2.5 h-2.5 rounded-full bg-successGreen"></span>`;
+                badge.className = "px-3 py-1 rounded-lg text-xs font-mono bg-successGreen/15 text-successGreen border border-successGreen/30 flex items-center gap-1.5 font-bold";
+                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-successGreen animate-pulse"></span>OPTIMAL LOCK`;
+            } else {
+                bar.className = "mb-6 p-3.5 rounded-xl bg-warningAmber/10 border border-warningAmber/30 flex justify-between items-center text-xs font-mono text-warningAmber font-bold transition-all shadow-sm";
+                bar.innerHTML = `<span>ALIGNMENT DEVIATION (${dist.toFixed(1)} px)</span><span class="w-2.5 h-2.5 rounded-full bg-warningAmber"></span>`;
+                badge.className = "px-3 py-1 rounded-lg text-xs font-mono bg-warningAmber/15 text-warningAmber border border-warningAmber/30 flex items-center gap-1.5 font-bold";
+                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-warningAmber animate-pulse"></span>DEVIATION`;
+            }
+
+            requestAnimationFrame(renderGaussianPulse);
+        }
+
+        requestAnimationFrame(renderGaussianPulse);
+
+        function updateSimRadius(val) {
+            document.getElementById('simRadiusVal').innerText = val;
+        }
+    </script>
 </body>
 </html>
